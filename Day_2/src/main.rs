@@ -64,10 +64,6 @@ impl Game {
             .map(GameReveal::new)
             .collect();
 
-        // for reveal in reveals.iter() {
-        // println!("{:?}", reveal);
-        // }
-
         Self { id, reveals }
     }
 
@@ -82,20 +78,54 @@ impl Game {
         }
         true
     }
+
+    fn get_max_blue(&self) -> u32 {
+        self.reveals
+            .iter()
+            .map(|reveal| reveal.blue)
+            .max()
+            .unwrap_or(0)
+    }
+
+    fn get_max_red(&self) -> u32 {
+        self.reveals
+            .iter()
+            .map(|reveal| reveal.red)
+            .max()
+            .unwrap_or(0)
+    }
+
+    fn get_max_green(&self) -> u32 {
+        self.reveals
+            .iter()
+            .map(|reveal| reveal.green)
+            .max()
+            .unwrap_or(0)
+    }
+
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let id_sum = std::fs::read_to_string(INPUT_PATH)
+    // let id_sum =
+    let power_sum = std::fs::read_to_string(INPUT_PATH)
         .expect("Error reading input file!")
         .lines()
-        .fold(0, |game_id_sum, line| {
+        // .fold(0, |game_id_sum, line| {
+        .fold(0, |cubes_power_sum, line| {
             let game = Game::new(line.to_string());
-            if game.is_possible() {
-                game_id_sum + game.id
-            } else {
-                game_id_sum
-            }
+            let max_blues = game.get_max_blue();
+            let max_greens = game.get_max_green();
+            let max_reds = game.get_max_red();
+            cubes_power_sum + (max_blues * max_greens * max_reds)
         });
-    print!("Sum of possible game IDs: {}", id_sum);
+            
+            // if game.is_possible() {
+            //     game_id_sum + game.id
+            // } else {
+            //     game_id_sum
+            // }
+        
+    // print!("Sum of possible game IDs: {}", id_sum);
+    print!("Sum of cube powers: {}", power_sum);
     Ok(())
 }
