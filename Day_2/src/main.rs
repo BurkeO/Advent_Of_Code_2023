@@ -16,8 +16,7 @@ impl GameReveal {
         let mut blue_count = 0;
         let mut red_count = 0;
         let mut green_count = 0;
-        let trim_reveal_line = reveal_line.trim();
-        trim_reveal_line.split(',').for_each(|count_colour_str| {
+        reveal_line.split(',').for_each(|count_colour_str| {
             let trimmed_count_colour_str = count_colour_str.trim();
             let colour = trimmed_count_colour_str.split(' ').nth(1).unwrap();
             let count = trimmed_count_colour_str
@@ -66,7 +65,7 @@ impl Game {
             .collect();
 
         // for reveal in reveals.iter() {
-            // println!("{:?}", reveal);
+        // println!("{:?}", reveal);
         // }
 
         Self { id, reveals }
