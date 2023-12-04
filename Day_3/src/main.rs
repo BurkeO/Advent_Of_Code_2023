@@ -40,17 +40,24 @@ impl Schematic {
                         .parse::<u32>()
                         .unwrap();
                     println!("Found number: {}", number);
-                    col += number.to_string().len();
+                    let number_length = number.to_string().len();
+                    col += number_length;
 
-
-                    //todo is adjacent to symbol
-
+                    for col_offset in 0..number_length {
+                        if self.is_adjacent_to_symbol(row, col + col_offset) {
+                            sum += number;
+                        }
+                    }
                 } else {
                     col += 1;
                 }
             }
         }
         sum
+    }
+
+    fn is_adjacent_to_symbol(&self, row: usize, col_offset: usize) -> bool {
+        todo!()
     }
 }
 
