@@ -10,35 +10,35 @@ struct Game {
 
 impl Game {
     fn new(game_text: &str) -> Self {
-        let game_number = game_text
-            .split(':')
-            .nth(0)
-            .unwrap()
+        let (game_number_str, cards_string) =
+            game_text.split_once(':').expect("Invalid game text format");
+
+        let game_number: u32 = game_number_str
             .split_whitespace()
             .nth(1)
             .unwrap()
-            .trim()
-            .parse::<u32>()
+            .parse()
             .unwrap();
-        let cards_string = game_text.split(':').nth(1).unwrap().to_string();
+
         let winning_numbers: HashSet<u32> = cards_string
             .split('|')
-            .nth(0)
-            .expect("failed to take first split of cards_string")
+            .next()
+            .expect("Failed to split cards_string")
             .split_whitespace()
             .map(|number_str| {
                 number_str
                     .trim()
-                    .parse::<u32>()
-                    .unwrap_or_else(|_| panic!("failed to parse number_str: {}", number_str))
+                    .parse()
+                    .unwrap_or_else(|_| panic!("Failed to parse number_str: {}", number_str))
             })
             .collect();
-        let player_numbers = cards_string
+
+        let player_numbers: HashSet<u32> = cards_string
             .split('|')
             .nth(1)
-            .unwrap()
+            .expect("Failed to split cards_string")
             .split_whitespace()
-            .map(|number_str| number_str.trim().parse::<u32>().unwrap())
+            .map(|number_str| number_str.trim().parse().unwrap())
             .collect();
 
         Self {
@@ -51,7 +51,7 @@ impl Game {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let game_vector: Vec<Game> = std::fs::read_to_string(FILE_PATH)
-        .expect("failed_to_read_file")
+        .expect("Failed to read file")
         .lines()
         .map(Game::new)
         .collect();
