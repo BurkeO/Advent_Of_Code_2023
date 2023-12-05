@@ -3,7 +3,7 @@ use std::collections::HashSet;
 const FILE_PATH: &str = "input.txt";
 
 struct Game {
-    game_number: u32,
+    // game_number: u32,
     winning_numbers: HashSet<u32>,
     player_numbers: HashSet<u32>,
 }
@@ -17,15 +17,14 @@ fn parse_numbers(string_of_numbers: &str) -> HashSet<u32> {
 
 impl Game {
     fn new(game_text: &str) -> Self {
-        let (game_number_str, cards_string) =
-            game_text.split_once(':').expect("Invalid game text format");
+        let (_, cards_string) = game_text.split_once(':').expect("Invalid game text format");
 
-        let game_number: u32 = game_number_str
-            .split_whitespace()
-            .nth(1)
-            .unwrap()
-            .parse()
-            .unwrap();
+        // let game_number: u32 = game_number_str
+        //     .split_whitespace()
+        //     .nth(1)
+        //     .unwrap()
+        //     .parse()
+        //     .unwrap();
 
         let winning_numbers: HashSet<u32> = parse_numbers(
             cards_string
@@ -42,7 +41,7 @@ impl Game {
         );
 
         Self {
-            game_number,
+            // game_number,
             winning_numbers,
             player_numbers,
         }
