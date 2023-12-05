@@ -8,6 +8,13 @@ struct Game {
     player_numbers: HashSet<u32>,
 }
 
+fn parse_numbers(string_of_numbers: &str) -> HashSet<u32> {
+    string_of_numbers
+        .split_whitespace()
+        .map(|number| number.trim().parse().expect("Failed to parse number"))
+        .collect()
+}
+
 impl Game {
     fn new(game_text: &str) -> Self {
         let (game_number_str, cards_string) =
@@ -20,26 +27,19 @@ impl Game {
             .parse()
             .unwrap();
 
-        let winning_numbers: HashSet<u32> = cards_string
-            .split('|')
-            .next()
-            .expect("Failed to split cards_string")
-            .split_whitespace()
-            .map(|number_str| {
-                number_str
-                    .trim()
-                    .parse()
-                    .unwrap_or_else(|_| panic!("Failed to parse number_str: {}", number_str))
-            })
-            .collect();
+        let winning_numbers: HashSet<u32> = parse_numbers(
+            cards_string
+                .split('|')
+                .next()
+                .expect("Failed to split cards_string"),
+        );
 
-        let player_numbers: HashSet<u32> = cards_string
-            .split('|')
-            .nth(1)
-            .expect("Failed to split cards_string")
-            .split_whitespace()
-            .map(|number_str| number_str.trim().parse().unwrap())
-            .collect();
+        let player_numbers: HashSet<u32> = parse_numbers(
+            cards_string
+                .split('|')
+                .nth(1)
+                .expect("Failed to split cards_string"),
+        );
 
         Self {
             game_number,
@@ -56,13 +56,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .map(Game::new)
         .collect();
 
-    let cards_total_worth = game_vector.iter().fold(0, |acc, game| {
+    let cards_total_worth = game_vector.iter().fold(0, |total_worth, game| {
         let user_winning_numbers = game.winning_numbers.intersection(&game.player_numbers);
         let user_winning_numbers_count = user_winning_numbers.count();
         if user_winning_numbers_count == 0 {
-            acc
+            total_worth
         } else {
-            acc + (2u32.pow(user_winning_numbers_count as u32 - 1))
+            total_worth + (2u32.pow(user_winning_numbers_count as u32 - 1))
         }
     });
 
