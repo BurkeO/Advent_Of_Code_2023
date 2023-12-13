@@ -3,7 +3,6 @@ use std::collections::HashSet;
 const FILE_PATH: &str = "input.txt";
 
 struct Game {
-    // game_number: u32,
     winning_numbers: HashSet<u32>,
     player_numbers: HashSet<u32>,
 }
@@ -18,13 +17,6 @@ fn parse_numbers(string_of_numbers: &str) -> HashSet<u32> {
 impl Game {
     fn new(game_text: &str) -> Self {
         let (_, cards_string) = game_text.split_once(':').expect("Invalid game text format");
-
-        // let game_number: u32 = game_number_str
-        //     .split_whitespace()
-        //     .nth(1)
-        //     .unwrap()
-        //     .parse()
-        //     .unwrap();
 
         let winning_numbers: HashSet<u32> = parse_numbers(
             cards_string
@@ -41,9 +33,29 @@ impl Game {
         );
 
         Self {
-            // game_number,
             winning_numbers,
             player_numbers,
+        }
+    }
+}
+
+fn count_games(games: &[Game], game_index: usize, current_count: &mut u64) {
+    if game_index < games.len() {
+        *current_count += 1;
+        let winning_games_count = games[game_index]
+            .winning_numbers
+            .intersection(&games[game_index].player_numbers)
+            .count();
+        if winning_games_count == 0 {
+            return;
+        }
+        let length_to_take = if games.len() < winning_games_count {
+            games.len()
+        } else {
+            winning_games_count + 1
+        };
+        for offset in 1..length_to_take {
+            count_games(games, game_index + offset, current_count)
         }
     }
 }
@@ -54,6 +66,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .lines()
         .map(Game::new)
         .collect();
+
+    let mut cards_count = 0;
+    for start_game_index in 0..game_vector.len() {
+        count_games(&game_vector, start_game_index, &mut cards_count);
+    }
+    println!("Cards Count {}", cards_count);
 
     let cards_total_worth = game_vector.iter().fold(0, |total_worth, game| {
         let user_winning_numbers = game.winning_numbers.intersection(&game.player_numbers);
